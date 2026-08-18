@@ -8,15 +8,15 @@ Se consideran tareas periódicas, independientes, con instante crítico común e
 
 La planificación se realiza mediante un ejecutivo cíclico sin fragmentación de trabajos. El hiperperíodo o ciclo mayor es:
 
-\[
+$$
 H = \operatorname{mcm}(T_1,T_2,\ldots,T_n)
-\]
+$$
 
 El factor de uso es:
 
-\[
+$$
 U = \sum_{i=1}^{n}\frac{C_i}{T_i}
-\]
+$$
 
 Para que un tamaño de trama `f` pueda actuar como período secundario debe cumplir:
 
@@ -24,11 +24,15 @@ Para que un tamaño de trama `f` pueda actuar como período secundario debe cump
 2. `f` debe dividir exactamente al hiperperíodo `H`.
 3. Para toda tarea `i` debe cumplirse:
 
-\[
+$$
 2f-\operatorname{mcd}(T_i,f)\le D_i
-\]
+$$
 
-Estas condiciones permiten seleccionar tramas candidatas, pero todavía debe construirse una tabla estática cuya carga no supere `f` en ninguna trama. La formulación de las restricciones de trama puede consultarse en estas notas de [Clock-Driven Scheduling de Texas A&M](https://people.engr.tamu.edu/bettati/Courses/663/2013C/Slides/clock_driven.pdf).
+Estas condiciones permiten seleccionar tramas candidatas, pero todavía debe construirse una tabla estática cuya carga no supere `f` en ninguna trama. 
+
+### Convención de los diagramas de Gantt
+
+Los diagramas usan el tiempo en el eje horizontal. Cada barra coloreada representa el intervalo durante el cual un trabajo ocupa la CPU: azul para T1, naranja para T2, verde para T3 y rojo para T4. Los espacios sin barra corresponden a CPU ociosa. En los sistemas no planificables se muestra el conflicto que impide construir un Gantt de ejecución válido.
 
 ### Criterio de prioridades
 
@@ -55,13 +59,13 @@ En un ejecutivo cíclico la tabla estática decide qué se ejecuta y no existe a
 | P2 | T2 | 2 | 5 | `2/5 = 0,40` |
 | P3 | T3 | 5 | 20 | `5/20 = 0,25` |
 
-\[
+$$
 U_1=\frac14+\frac25+\frac5{20}=0,90
-\]
+$$
 
-\[
+$$
 H_1=\operatorname{mcm}(4,5,20)=20
-\]
+$$
 
 ### 3.2 Test de garantía
 
@@ -78,6 +82,8 @@ No existe un período secundario válido. Aunque el procesador sólo se utiliza 
 ### 3.3 Gantt de la incompatibilidad
 
 La primera ventana de T1 termina en `t = 4`, mientras que la trama mínima necesaria para contener T3 terminaría en `t = 5`:
+
+![Sistema 1 - Gantt del conflicto de trama](../figures/cyclic-s1-conflict.svg)
 
 | Intervalo | `[0,4)` | `[4,5)` |
 | :-- | :--: | :--: |
@@ -96,13 +102,13 @@ Por lo tanto, no puede dibujarse un Gantt de ejecución cíclica válido para es
 | P2 | T2 | 2 | 10 | `2/10 = 0,20` |
 | P3 | T3 | 2 | 18 | `2/18 = 0,1111` |
 
-\[
+$$
 U_2=\frac16+\frac2{10}+\frac2{18}=\frac{43}{90}=0,4778
-\]
+$$
 
-\[
+$$
 H_2=\operatorname{mcm}(6,10,18)=90
-\]
+$$
 
 ### 4.2 Test de garantía
 
@@ -118,7 +124,13 @@ El ciclo mayor contiene `H/f = 90/2 = 45` tramas.
 
 ### 4.3 Diagrama de Gantt del ciclo mayor
 
-Cada celda representa una trama de dos unidades. `Tn.j` identifica el trabajo `j` de la tarea `Tn`; `-` representa tiempo ocioso. Cuando se ejecuta T1 queda una unidad ociosa dentro de la trama.
+El siguiente Gantt representa las 90 unidades del hiperperíodo, dividido en tres paneles para conservar la legibilidad. `Tn.j` identifica el trabajo `j` de la tarea `Tn`. Cada barra comienza en el instante asignado por la tabla cíclica; las barras grises representan tiempo ocioso.
+
+![Sistema 2 - Gantt cíclico completo](../figures/cyclic-s2-gantt.svg)
+
+#### Tabla estática completa
+
+Cada celda representa una trama de dos unidades. `-` representa una trama completamente ociosa. Cuando se ejecuta T1 queda además una unidad ociosa dentro de su trama.
 
 | Tramas | Asignación |
 | :-- | :-- |
@@ -145,14 +157,14 @@ La tabla asigna exactamente 15 trabajos de T1, 9 de T2 y 5 de T3. Todos comienza
 | P3 | T3 | 4 | 20 | `0,2000` |
 | P4 | T4 | 6 | 22 | `0,2727` |
 
-\[
+$$
 U_3=\frac18+\frac3{15}+\frac4{20}+\frac6{22}
 =\frac{1053}{1320}=0,7977
-\]
+$$
 
-\[
+$$
 H_3=\operatorname{mcm}(8,15,20,22)=1320
-\]
+$$
 
 ### 5.2 Test de garantía
 
@@ -175,6 +187,10 @@ Sin embargo, no puede construirse la tabla estática sin fragmentar trabajos. El
 
 ### 5.3 Gantt del conflicto
 
+El gráfico compara la capacidad disponible en F14 y F15 con el tiempo continuo requerido por T4.6:
+
+![Sistema 3 - Gantt del conflicto de asignación](../figures/cyclic-s3-conflict.svg)
+
 | Trama | Intervalo | Carga forzada | Espacio restante | ¿Cabe T4 (`C4 = 6`)? |
 | :--: | :--: | :-- | --: | :--: |
 | F14 | `[112,120)` | `T1 (1) + T2 (3)` | 4 | No |
@@ -193,25 +209,29 @@ No existe un Gantt cíclico válido con trabajos indivisibles. Para hacerlo viab
 | P3 | T3 | 2 | 10 | `0,2000` |
 | P4 | T4 | 9 | 24 | `0,3750` |
 
-\[
+$$
 U_4=\frac{0,5}{4}+\frac15+\frac2{10}+\frac9{24}=0,90
-\]
+$$
 
-\[
+$$
 H_4=\operatorname{mcm}(4,5,10,24)=120
-\]
+$$
 
 ### 6.2 Test de garantía
 
 Se necesita `f >= max(C_i) = 9`. El menor divisor posible de `H` es entonces `f = 10`, pero falla inmediatamente para T1:
 
-\[
+$$
 2(10)-\operatorname{mcd}(4,10)=20-2=18>D_1=4
-\]
+$$
 
 Todo divisor mayor produce un lado izquierdo aún mayor para T1, por lo que no existe período secundario válido.
 
 ### 6.3 Gantt de la incompatibilidad
+
+El Gantt muestra que la trama candidata requerida por el WCET de T4 se extiende mucho más allá del plazo de la primera instancia de T1:
+
+![Sistema 4 - Gantt del conflicto de trama](../figures/cyclic-s4-conflict.svg)
 
 | Intervalo | `[0,4)` | `[4,10)` |
 | :-- | :--: | :--: |

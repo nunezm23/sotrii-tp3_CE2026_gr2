@@ -6,20 +6,19 @@
 
 Se consideran tareas periódicas, independientes, totalmente apropiables, sin bloqueos ni sobrecarga del sistema operativo, liberadas inicialmente en `t = 0`, con `D_i = T_i`. El planificador ejecuta siempre la tarea lista de mayor prioridad.
 
-Rate Monotonic (RM) asigna prioridades fijas inversamente proporcionales al período: cuanto menor es `T_i`, mayor es la prioridad.
 
 El factor de uso y el hiperperíodo se calculan como:
 
-\[
+$$
 U=\sum_{i=1}^{n}\frac{C_i}{T_i},\qquad
 H=\operatorname{mcm}(T_1,T_2,\ldots,T_n)
-\]
+$$
 
 ### 1.1 Test suficiente de Liu y Layland
 
-\[
+$$
 U\le U_{LL}(n)=n\left(2^{1/n}-1\right)
-\]
+$$
 
 Los límites utilizados son `U_LL(3) = 0,7798` y `U_LL(4) = 0,7568`. Si se cumple la desigualdad, el sistema queda garantizado. Si no se cumple, el resultado es inconcluso y se aplica el análisis exacto de tiempo de respuesta.
 
@@ -27,16 +26,20 @@ Los límites utilizados son `U_LL(3) = 0,7798` y `U_LL(4) = 0,7568`. Si se cumpl
 
 Para cada tarea ordenada por prioridad se itera:
 
-\[
+$$
 R_i^{(k+1)}=C_i+\sum_{j\in hp(i)}
 \left\lceil\frac{R_i^{(k)}}{T_j}\right\rceil C_j
-\]
+$$
 
 Se parte de `R_i^(0) = C_i`. La tarea está garantizada si la iteración converge a `R_i <= D_i`.
 
 ### 1.3 Período secundario
 
 RM es dirigido por prioridades y eventos, por lo que no posee un período secundario o trama como el ejecutivo cíclico. Para completar el campo solicitado por la consigna se informa `mcd(T_i)` como grilla temporal de análisis; no constituye una restricción del algoritmo RM.
+
+### 1.4 Convención de los diagramas de Gantt
+
+Los Gantt usan el tiempo en el eje horizontal y una fila de CPU. Azul representa T1, naranja T2, verde T3 y rojo T4; el gris representa CPU ociosa. Un mismo trabajo puede aparecer en varios bloques cuando es apropiado por una tarea de mayor prioridad.
 
 ## 2. Resumen de resultados
 
@@ -59,9 +62,9 @@ RM es dirigido por prioridades y eventos, por lo que no posee un período secund
 | P2 | T2 | 2 | 5 | `0,40` |
 | P3 | T3 | 5 | 20 | `0,25` |
 
-\[
+$$
 U_1=0,90,\qquad H_1=20,\qquad \operatorname{mcd}=1
-\]
+$$
 
 Como `0,90 > U_LL(3) = 0,7798`, el test suficiente no garantiza el sistema.
 
@@ -76,6 +79,12 @@ Como `0,90 > U_LL(3) = 0,7798`, el test suficiente no garantiza el sistema.
 El Sistema 1 es planificable por RM.
 
 ### 3.3 Diagrama de Gantt, `0 <= t < 20`
+
+El gráfico cubre el hiperperíodo completo. Las interrupciones de T3.1 evidencian las apropiaciones producidas por T1 y T2.
+
+![Sistema 1 - Gantt Rate Monotonic completo](../figures/rm-s1-gantt.svg)
+
+#### Secuencia temporal detallada
 
 | Intervalo | `[0,1)` | `[1,3)` | `[3,4)` | `[4,5)` | `[5,7)` | `[7,8)` | `[8,9)` | `[9,10)` |
 | :-- | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
@@ -97,9 +106,9 @@ T3.1 completa en `t = 15`, antes de su plazo `t = 20`. En `t = 20` comienza el s
 | P2 | T2 | 2 | 10 | `0,2000` |
 | P3 | T3 | 2 | 18 | `0,1111` |
 
-\[
+$$
 U_2=\frac{43}{90}=0,4778,\qquad H_2=90,\qquad \operatorname{mcd}=2
-\]
+$$
 
 Como `0,4778 <= 0,7798`, el test suficiente de Liu-Layland garantiza el sistema.
 
@@ -111,9 +120,13 @@ Como `0,4778 <= 0,7798`, el test suficiente de Liu-Layland garantiza el sistema.
 | T2 | `2 -> 3 -> 3` | `R2 = 3 <= 10` |
 | T3 | `2 -> 5 -> 5` | `R3 = 5 <= 18` |
 
-### 4.3 Diagrama de Gantt representativo, `0 <= t < 30`
+### 4.3 Diagrama de Gantt completo, `0 <= t < 90`
 
-El ciclo mayor completo dura 90 unidades; el siguiente tramo permite observar las liberaciones y apropiaciones de las tres tareas. Los restantes trabajos obedecen la misma regla RM y quedan cubiertos por los tests anteriores.
+El ciclo mayor completo dura 90 unidades y se presenta en tres paneles consecutivos: `[0,30)`, `[30,60)` y `[60,90)`.
+
+![Sistema 2 - Gantt Rate Monotonic completo](../figures/rm-s2-gantt.svg)
+
+#### Secuencia temporal detallada del primer panel
 
 | Intervalo | `[0,1)` | `[1,3)` | `[3,5)` | `[5,6)` | `[6,7)` | `[7,10)` | `[10,12)` | `[12,13)` |
 | :-- | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
@@ -136,9 +149,9 @@ El Sistema 2 es planificable por RM.
 | P3 | T3 | 4 | 20 | `0,2000` |
 | P4 | T4 | 6 | 22 | `0,2727` |
 
-\[
+$$
 U_3=\frac{1053}{1320}=0,7977,\qquad H_3=1320,\qquad \operatorname{mcd}=1
-\]
+$$
 
 Como `0,7977 > U_LL(4) = 0,7568`, el límite suficiente es inconcluso.
 
@@ -154,6 +167,10 @@ Como `0,7977 > U_LL(4) = 0,7568`, el límite suficiente es inconcluso.
 ### 5.3 Diagrama de Gantt representativo, `0 <= t < 45`
 
 Debido a que `H = 1320`, se muestra un tramo legible que contiene trabajos de las cuatro tareas. La garantía de todo el hiperperíodo proviene del análisis exacto.
+
+![Sistema 3 - Gantt Rate Monotonic representativo](../figures/rm-s3-gantt.svg)
+
+#### Secuencia temporal detallada del tramo mostrado
 
 | Intervalo | `[0,1)` | `[1,4)` | `[4,8)` | `[8,9)` | `[9,15)` | `[15,16)` | `[16,17)` | `[17,19)` | `[19,20)` |
 | :-- | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
@@ -176,9 +193,9 @@ El Sistema 3 es planificable por RM.
 | P3 | T3 | 2 | 10 | `0,2000` |
 | P4 | T4 | 9 | 24 | `0,3750` |
 
-\[
+$$
 U_4=0,90,\qquad H_4=120,\qquad \operatorname{mcd}=1
-\]
+$$
 
 Como `0,90 > 0,7568`, el límite suficiente no garantiza el sistema.
 
@@ -191,7 +208,13 @@ Como `0,90 > 0,7568`, el límite suficiente no garantiza el sistema.
 | T3 | `2 -> 3,5 -> 3,5` | `R3 = 3,5 <= 10` |
 | T4 | `9 -> 14,5 -> 18 -> 19,5 -> 19,5` | `R4 = 19,5 <= 24` |
 
-### 6.3 Diagrama de Gantt representativo, `0 <= t < 24`
+### 6.3 Diagrama de Gantt completo, `0 <= t < 120`
+
+El hiperperíodo completo se divide en cuatro paneles de 30 unidades. Las barras rojas separadas de cada trabajo de T4 muestran claramente sus apropiaciones.
+
+![Sistema 4 - Gantt Rate Monotonic completo](../figures/rm-s4-gantt.svg)
+
+#### Secuencia temporal detallada del primer período de T4, `0 <= t < 24`
 
 | Intervalo | `[0,0,5)` | `[0,5,1,5)` | `[1,5,3,5)` | `[3,5,4)` | `[4,4,5)` | `[4,5,5)` |
 | :-- | :--: | :--: | :--: | :--: | :--: | :--: |
